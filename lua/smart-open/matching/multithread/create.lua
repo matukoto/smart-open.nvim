@@ -26,12 +26,16 @@ local function create_matcher(opts, context)
 
   local M = {}
 
-  local native_fzy_path = matching_algorithm ~= "fzf"
+  local native_fzy_path = matching_algorithm == "fzy"
     and vim.api.nvim_get_runtime_file("deps/fzy-lua-native/lua/native.lua", false)[1]
+
+  local native_zf_path = matching_algorithm == "zf"
+    and vim.api.nvim_get_runtime_file("deps/telescope-zf-native/lua/zf-native.lua", false)[1]
 
   local opt_table = {
     matching_algorithm = matching_algorithm,
     native_fzy_path = native_fzy_path or nil,
+    native_zf_path = native_zf_path or nil,
     weights = context.weights,
   }
 
@@ -51,11 +55,8 @@ local function create_matcher(opts, context)
         break
       end
 
-      local entry_to_add = create_entry_data(
-        entry.path,
-        history_data_cache[entry.path] or { frecency = 0, recent_rank = 0 },
-        context
-      )
+      local entry_to_add =
+        create_entry_data(entry.path, history_data_cache[entry.path] or { frecency = 0, recent_rank = 0 }, context)
 
       process_result(vim.tbl_deep_extend("keep", entry_to_add, entry))
     end
@@ -100,7 +101,6 @@ local function create_matcher(opts, context)
       if work_result.cancel_token == cancel_token then
         -- This particular search hasn't been canceled, so yield these results and queue more work
         queue_next()
-
         combine_with_main(work_result.result)
 
         if complete and waiting_threads == 0 and last_processed_index == #packed then

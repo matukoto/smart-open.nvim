@@ -36,7 +36,7 @@ Calculating and tuning all these factors might sound slow, but this is not the c
 # Notes
 
 - In certain cases, both the parent directory as well as the filename are treated as the "file name".  This is because for some file structures, the filename itself isn't informative.  For example, if your JavaScript project uses the convention of `directoryName/index.js` throughout, then searching for "index" isn't going to be very useful.  As a result, we treat `index.js` and `init.lua` as special cases, and treat `parentDirectory/filename` as though it were the filename.
-- Search text matching uses the fzy algorithm.  If telescope-fzy-native is installed, it will be used.
+- Search text matching uses the fzy algorithm by default. If telescope-fzy-native is installed, it will be used. If telescope-zf-native is installed and zf algorithm is selected, it will be used.
 - Determining how close two files' directories are is just a function of how many directories the two files have in common.  This means that for any pair of files in the same directory, the score is more significant the deeper that directory is.
 - Frecency controls how long a given file is preserved in history.  While it can be replenished by opening that file, this value otherwise dwindles over time. When the value is fully depleted, the file can be cleared from the history, improving performance and disk usage. Frecency uses an implementation of Mozilla's [Frecency algorithm](https://developer.mozilla.org/en-US/docs/Mozilla/Tech/Places/Frecency_algorithm) (used in [Firefox's address bar](https://support.mozilla.org/en-US/kb/address-bar-autocomplete-firefox)).
 
@@ -58,6 +58,7 @@ As the extension learns your editing habits over time, the sorting of the list i
 - [sqlite.lua](https://github.com/kkharji/sqlite.lua) (required)
 - [nvim-web-devicons](https://github.com/kyazdani42/nvim-web-devicons) (optional)
 - [telescope-fzy-native.nvim](https://github.com/nvim-telescope/telescope-fzy-native.nvim) (optional)
+- [telescope-zf-native.nvim](https://github.com/natecraddock/telescope-zf-native.nvim) (optional)
 - [telescope-fzf-native.nvim](https://github.com/nvim-telescope/telescope-fzf-native.nvim) (optional)
 
 Timestamps, scoring weights, and file records are stored in an [SQLite3](https://www.sqlite.org/index.html) database for persistence and speed.
@@ -81,6 +82,8 @@ Put the following in your `lazy.setup(...)`:
     { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
     -- Optional.  If installed, native fzy will be used when match_algorithm is fzy
     { "nvim-telescope/telescope-fzy-native.nvim" },
+    -- Optional.  If installed, native zf will be used when match_algorithm is zf
+    { "natecraddock/telescope-zf-native.nvim" },
   },
 }
 ```
@@ -193,7 +196,7 @@ See [default configuration](https://github.com/nvim-telescope/telescope.nvim#tel
 
 - `match_algorithm` (default: `fzy`)
 
-  The algorithm to use for determining how well each file path matches the typed-in search text.  Options are `fzf` and `fzy`.  Entered text is not the only factor considered in ranking but is typically the most significant.
+  The algorithm to use for determining how well each file path matches the typed-in search text.  Options are `fzf`, `fzy`, and `zf`.  Entered text is not the only factor considered in ranking but is typically the most significant.
 
 - `disable_devicons` (default: `false`)
 
@@ -230,5 +233,3 @@ As a result, files added to git, _but also ignored by git_, will not be included
 ```vim
 Directory
 ```
-
-
