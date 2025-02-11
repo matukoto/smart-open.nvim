@@ -1,4 +1,7 @@
-local zf = require("zf-native")
+local has_native, zf = pcall(require, "telescope._extensions.zf-native.native")
+if not has_native then
+  error("telescope-zf-native is required for zf algorithm")
+end
 
 local M = {}
 
