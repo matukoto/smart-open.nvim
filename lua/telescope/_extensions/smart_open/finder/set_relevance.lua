@@ -8,7 +8,7 @@ return function(options)
   local weights = options.weights
 
   matching_algorithm = matching_algorithm or "fzy"
-  assert(matching_algorithm == "fzy" or matching_algorithm == "fzf", "Matching algorithm must be fzf or fzy")
+  assert(matching_algorithm == "fzy" or matching_algorithm == "fzf" or matching_algorithm == "zf", "Matching algorithm must be fzf, fzy, or zf")
 
   local prompt_matcher = require("smart-open.matching.algorithms." .. matching_algorithm)
   prompt_matcher.init(options)
