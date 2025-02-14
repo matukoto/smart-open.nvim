@@ -1,4 +1,10 @@
-local zf = require("telescope._extensions.zf-native")
+local has_zf, zf = pcall(require, "zf")
+if not has_zf then
+  error("zf module is required for zf matching algorithm. Make sure telescope-zf-native.nvim is installed correctly.")
+end
+
+-- Load the C/Rust library
+zf.load_zf()
 
 local state = {
   prompt_cache = {},
@@ -7,7 +13,7 @@ local state = {
 local function get_struct(prompt)
   local struct = state.prompt_cache[prompt]
   if not struct then
-    struct = zf.parse_pattern(prompt)
+    struct = zf.tokenize(prompt)
     state.prompt_cache[prompt] = struct
   end
   return struct
@@ -22,7 +28,7 @@ local function get_zf_sorter(opts)
 
   function M.scoring_function(_, prompt, line)
     local obj = get_struct(prompt)
-    local score = zf.get_score(line, obj)
+    local score = zf.rank(line, obj.tokens, obj.len, true, true)
     if score == 0 then
       return -1
     else
@@ -31,7 +37,8 @@ local function get_zf_sorter(opts)
   end
 
   function M.highlighter(_, prompt, display)
-    return zf.get_pos(display, get_struct(prompt))
+    local struct = get_struct(prompt)
+    return zf.highlight(display, struct.tokens, struct.len, true, true)
   end
 
   function M.destroy()
